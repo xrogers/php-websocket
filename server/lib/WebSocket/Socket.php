@@ -39,28 +39,28 @@ class Socket
      */
     private function createSocket($host, $port)
     {
-        if (($this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) < 0) {
-            die("socket_create() failed, reason: " . socket_strerror($this->master));
-        }
-
-        self::console("Socket {$this->master} created.");
-
-        socket_set_option($this->master, SOL_SOCKET, SO_REUSEADDR, 1);
-        #socket_set_option($master,SOL_SOCKET,SO_KEEPALIVE,1);
-
-        if (($ret = socket_bind($this->master, $host, $port)) < 0) {
-            die("socket_bind() failed, reason: " . socket_strerror($ret));
-        }
-
-        self::console("Socket bound to {$host}:{$port}.");
-
-        if (($ret = socket_listen($this->master, 5)) < 0) {
-            die("socket_listen() failed, reason: " . socket_strerror($ret));
-        }
-
-        self::console('Start listening on Socket.');
-
-        $this->allsockets[] = $this->master;
+    	if (!($this->master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP))) {
+			die("socket_create() failed, reason: " . socket_strerror(socket_last_error()));
+		}
+		
+		self::console("Socket {$this->master} created.");
+		
+		socket_set_option($this->master, SOL_SOCKET, SO_REUSEADDR, 1);
+		#socket_set_option($master,SOL_SOCKET,SO_KEEPALIVE,1);
+		
+		if (!socket_bind($this->master, $host, $port)) {
+			die("socket_bind() failed, reason: " . socket_strerror(socket_last_error($this->master)));
+		}
+		
+		self::console("Socket bound to {$host}:{$port}.");
+		
+		if (!socket_listen($this->master, 5)) {
+			die("socket_listen() failed, reason: " . socket_strerror(socket_last_error($this->master)));
+		}
+		
+		self::console('Start listening on Socket.');
+		
+		$this->allsockets[] = $this->master;
     }
 
     /**
